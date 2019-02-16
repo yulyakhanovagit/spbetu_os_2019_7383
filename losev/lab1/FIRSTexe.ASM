@@ -1,68 +1,74 @@
-; .COM
-TESTPC 	SEGMENT
-		ASSUME CS:TESTPC, DS:TESTPC, ES:NOTHING, SS:NOTHING
-		ORG 100H
-START: JMP BEGIN
-; ДАННЫЕ
+;------------------------
+AStack SEGMENT STACK
+DW 12 DUP(?)
+AStack ENDS
 
-PC_OTHER DB '  ', 0DH, 0AH, '$'
-PC_TYPE DB 'TYPE IBM PC: $'
-PC_PC DB 'PC.', 0DH, 0AH, '$'
-PC_XT DB 'PC/XT.', 0DH, 0AH, '$'
-PC_AT DB 'AT.', 0DH, 0AH, '$'
-PC_PS2M30 DB 'PS2 m.30.', 0DH, 0AH, '$'
-PC_PS2M60 DB 'PS2 m.50/60.', 0DH, 0AH, '$'
-PC_PS2M80 DB 'PS2 m.80.', 0DH, 0AH, '$'
-PC_CON DB 'PC CONVERTIBLE.', 0DH, 0AH, '$'
-PC_JR DB 'PC JR.', 0DH, 0AH, '$'
+DATA SEGMENT
+		; ДАННЫЕ
 
-DOS_VER	DB	'DOS VERSION: '
-DOS_F	DB	1 dup(?), '.'				; 1 цифра
-END_DOS_VER DB 2 dup(?), 0AH, 0DH, '$'	; до двух цифр
-OEM	DB	'OEM: ', 1 dup(?)				; всего 2 символа				
-OEMEND DB 1 dup(?), 0AH, 0DH,'$'		; для 1 байта
-USERN	DB	'USER NUMBER: ', 5 dup(?)	; всего 6 символов
-USRNEND DB 1 dup(?), '$'		; для 3 байт
+		PC_OTHER DB '  ', 0DH, 0AH, '$'
+		PC_TYPE DB 'TYPE IBM PC: $'
+		PC_PC DB 'PC.', 0DH, 0AH, '$'
+		PC_XT DB 'PC/XT.', 0DH, 0AH, '$'
+		PC_AT DB 'AT.', 0DH, 0AH, '$'
+		PC_PS2M30 DB 'PS2 m.30.', 0DH, 0AH, '$'
+		PC_PS2M60 DB 'PS2 m.50/60.', 0DH, 0AH, '$'
+		PC_PS2M80 DB 'PS2 m.80.', 0DH, 0AH, '$'
+		PC_CON DB 'PC CONVERTIBLE.', 0DH, 0AH, '$'
+		PC_JR DB 'PC JR.', 0DH, 0AH, '$'
+
+		DOS_VER	DB	'DOS VERSION: '
+		DOS_F	DB	1 dup(?), '.'				; 1 цифра
+		END_DOS_VER DB 2 dup(?), 0AH, 0DH, '$'	; до двух цифр
+		OEM	DB	'OEM: ', 1 dup(?)				; всего 2 символа				
+		OEMEND DB 1 dup(?), 0AH, 0DH,'$'		; для 1 байта
+		USERN	DB	'USER NUMBER: ', 5 dup(?)	; всего 6 символов
+		USRNEND DB 1 dup(?), '$'		; для 3 байт
+
+DATA ENDS
+
+CODE SEGMENT
+ASSUME CS:CODE, DS:DATA, SS:AStack
 
 ; ПРОЦЕДУРЫ
 ;-----------------------------------------------------
 TETR_TO_HEX PROC near 
-	and AL,0Fh
-	cmp AL,09
-	jbe NEXT
-	add AL,07
+		and AL,0Fh
+		cmp AL,09
+		jbe NEXT
+		add AL,07
 NEXT:
-	add AL,30h
-	ret
+		add AL,30h
+		ret
 TETR_TO_HEX ENDP
 
 BYTE_TO_HEX PROC near
-	push CX
-	mov AH,AL
-	call TETR_TO_HEX
-	xchg AL,AH
-	mov CL,4
-	shr AL,CL
-	call TETR_TO_HEX 
-	pop CX
-	ret
+		push CX
+		mov AH,AL
+		call TETR_TO_HEX
+		xchg AL,AH
+		mov CL,4
+		shr AL,CL
+		call TETR_TO_HEX 
+		pop CX
+		ret
 BYTE_TO_HEX ENDP
 ;-------------------------------
 WRD_TO_HEX PROC near
-	push BX
-	mov BH,AH
-	call BYTE_TO_HEX
-	mov [DI],AH
-	dec DI
-	mov [DI],AL
-	dec DI
-	mov AL,BH
-	call BYTE_TO_HEX
-	mov [DI],AH
-	dec DI
-	mov [DI],AL
-	pop BX
-	ret
+		push BX
+		mov BH,AH
+		call BYTE_TO_HEX
+		mov [DI],AH
+		dec DI
+		mov [DI],AL
+		dec DI
+		mov AL,BH
+		call BYTE_TO_HEX
+		mov [DI],AH
+		dec DI
+		mov [DI],AL
+		pop BX
+		ret
 WRD_TO_HEX ENDP
 ;--------------------------------------------------
 
@@ -96,10 +102,16 @@ OUTPUT_PROC PROC NEAR ;Вывод на экран сообщения
 	    pop ax
 	    ret
 OUTPUT_PROC ENDP
-;--------------------------------------------------
-BEGIN:
-	
-		mov bx, 0f000h
+
+
+Main PROC FAR
+	push DS
+	sub AX,AX
+	push AX
+	mov AX,DATA
+	mov DS,AX
+
+	mov bx, 0f000h
 		mov AL, bx[0fffeh] 			; получили тип pc
 		
 		lea		dx, PC_TYPE
@@ -175,16 +187,10 @@ output:
 
 		LEA dx, USERN	
 		call	OUTPUT_PROC
-		
-		
-		
-		
-		
-; ВЫХОД В DOS
-		xor AL,AL
-		mov AH,4Ch
-		int 21H
-TESTPC 	ENDS
-		END START ;
 
-;------------------------------- 
+	ret
+Main ENDP
+
+CODE ENDS
+
+END Main
