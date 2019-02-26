@@ -14,7 +14,7 @@
 | Koryakin           | FineGun            |   -   |   -   |   -   |   -   |   -   |   -   |   -   |
 | Laskovenko         | laskovenko1        |   -   |   -   |   -   |   -   |   -   |   -   |   -   |
 | Levkovich          | DmLvkvch           |   -   |   -   |   -   |   -   |   -   |   -   |   -   |
-| Losev              | LosevMikhail       |   -   |   -   |   -   |   -   |   -   |   -   |   -   |
+| Losev              | LosevMikhail       | 26.02 |   -   |   -   |   -   |   -   |   -   |   -   |
 | Markova            | AngelinaMarkova99  |   -   |   -   |   -   |   -   |   -   |   -   |   -   |
 | Medvedev           | vanokako           |   -   |   -   |   -   |   -   |   -   |   -   |   -   |
 | Prokopenko         | ProkopenkoNadezhda |   -   |   -   |   -   |   -   |   -   |   -   |   -   |
